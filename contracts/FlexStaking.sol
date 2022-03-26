@@ -9,9 +9,9 @@ pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+// import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
-contract FlexStaking is Ownable,ReentrancyGuard{
+contract FlexStaking is Ownable{
 
     IERC20 GRAV;
 
@@ -105,6 +105,16 @@ contract FlexStaking is Ownable,ReentrancyGuard{
     }
 
     function setRewardRate(uint _rate) external onlyOwner{
+        for(uint i=0;i<userStaked.length;i++){
+            address account = userStaked[i];
+            rewardPerTokenStored = rewardPerToken();
+            lastUpdateTime = block.timestamp;
+            rewards[account] = earned(account);
+            userRewardPerTokenPaid[account] = rewardPerTokenStored;
+            uint reward = rewards[account];
+            rewards[account] = 0;
+            GRAV.transfer(account, reward);
+        }
         rewardRate = _rate;
     }
 
