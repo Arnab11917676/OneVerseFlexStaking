@@ -40,19 +40,20 @@ contract FlexStaking is Ownable,ReentrancyGuard{
         GRAV = IERC20(_grav);
     } 
 
-    function rewardPerToken() public view returns(uint){
-        if(_totalSupply == 0){
-            return 0;
+    function rewardPerToken() public view returns (uint) {
+        if (_totalSupply == 0) {
+            return rewardPerTokenStored;
         }
-        return rewardPerTokenStored + (
-            (rewardRate/1 days) + (block.timestamp - lastUpdateTime) * 1e18 / _totalSupply
-        );
+        return
+            rewardPerTokenStored +
+            (((block.timestamp - lastUpdateTime) * rewardRate * 1e18) / _totalSupply);
     }
 
-    function earned(address account) public view returns(uint){
-        return (
-            balances[account] * (rewardPerToken() - userRewardPerTokenPaid[account]) / 1e18
-        ) + rewards[account];
+    function earned(address account) public view returns (uint) {
+        return
+            ((balances[account] *
+                (rewardPerToken() - userRewardPerTokenPaid[account])) / 1e18) +
+            rewards[account];
     }
 
     modifier updateReward(address account) {
