@@ -105,10 +105,10 @@ contract FlexStaking is Ownable{
     }
 
     function setRewardRate(uint _rate) external onlyOwner{
+        rewardPerTokenStored = rewardPerToken();
+        lastUpdateTime = block.timestamp;
         for(uint i=0;i<userStaked.length;i++){
             address account = userStaked[i];
-            rewardPerTokenStored = rewardPerToken();
-            lastUpdateTime = block.timestamp;
             rewards[account] = earned(account);
             userRewardPerTokenPaid[account] = rewardPerTokenStored;
             uint reward = rewards[account];
